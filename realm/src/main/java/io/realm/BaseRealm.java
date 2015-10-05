@@ -395,7 +395,7 @@ abstract class BaseRealm implements Closeable {
             lastLocalInstanceClosed();
             sharedGroupManager.close();
             sharedGroupManager = null;
-            releaseFileReference();
+            releaseFileReference(configuration);
         }
 
         int refCount = references - 1;
@@ -423,36 +423,32 @@ abstract class BaseRealm implements Closeable {
     /**
      * Acquire a reference to the given Realm file.
      */
-    protected void acquireFileReference(RealmConfiguration configuration) {
-        synchronized (BaseRealm.class) {
-            String path = configuration.getPath();
-            Integer refCount = globalRealmFileReferenceCounter.get(path);
-            if (refCount == null) {
-                refCount = 0;
-            }
-            globalRealmFileReferenceCounter.put(path, refCount + 1);
+    static synchronized void acquireFileReference(RealmConfiguration configuration) {
+        String path = configuration.getPath();
+        Integer refCount = globalRealmFileReferenceCounter.get(path);
+        if (refCount == null) {
+            refCount = 0;
         }
+        globalRealmFileReferenceCounter.put(path, refCount + 1);
     }
 
     /**
      * Releases a reference to the Realm file. If reference count reaches 0 any cached configurations
      * will be removed.
      */
-    protected void releaseFileReference() {
-        synchronized (BaseRealm.class) {
-            String canonicalPath = configuration.getPath();
-            List<RealmConfiguration> pathConfigurationCache = globalPathConfigurationCache.get(canonicalPath);
-            pathConfigurationCache.remove(configuration);
-            if (pathConfigurationCache.isEmpty()) {
-                globalPathConfigurationCache.remove(canonicalPath);
-            }
-
-            Integer refCount = globalRealmFileReferenceCounter.get(canonicalPath);
-            if (refCount == null || refCount == 0) {
-                throw new IllegalStateException("Trying to release a Realm file that is already closed");
-            }
-            globalRealmFileReferenceCounter.put(canonicalPath, refCount - 1);
+    static synchronized void releaseFileReference(RealmConfiguration configuration) {
+        String canonicalPath = configuration.getPath();
+        List<RealmConfiguration> pathConfigurationCache = globalPathConfigurationCache.get(canonicalPath);
+        pathConfigurationCache.remove(configuration);
+        if (pathConfigurationCache.isEmpty()) {
+            globalPathConfigurationCache.remove(canonicalPath);
         }
+
+        Integer refCount = globalRealmFileReferenceCounter.get(canonicalPath);
+        if (refCount == null || refCount == 0) {
+            throw new IllegalStateException("Trying to release a Realm file that is already closed");
+        }
+        globalRealmFileReferenceCounter.put(canonicalPath, refCount - 1);
     }
 
     // package protected so unit tests can access it
