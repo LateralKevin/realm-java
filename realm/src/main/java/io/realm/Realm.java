@@ -172,7 +172,7 @@ public final class Realm extends BaseRealm {
      * @param context An non-null Android {@link android.content.Context}
      * @return An instance of the Realm class.
 
-     * @throws java.lang.NullPointerException If no {@link Context} is provided.
+     * @throws java.lang.IllegalArgumentException If no {@link Context} is provided.
      * @throws RealmMigrationNeededException If the model classes no longer match the underlying Realm
      *                                       and it must be migrated.
      * @throws RealmIOException              If an error happened when accessing the underlying Realm
