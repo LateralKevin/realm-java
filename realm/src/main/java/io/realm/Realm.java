@@ -72,7 +72,7 @@ import io.realm.internal.log.RealmLog;
  * Realm instances cannot be used across different threads. This means that you have to open an
  * instance on each thread you want to use Realm. Realm instances are cached automatically per
  * thread using reference counting, so as long as the reference count doesn't reach zero, calling
- * {@link #getInstance(android.content.Context)} will just return the cached Realm and should be
+ * {@link #getInstance(RealmConfiguration)}get will just return the cached Realm and should be
  * considered a lightweight operation.
  * <p>
  * For the UI thread this means that opening and closing Realms should occur in either
@@ -169,8 +169,10 @@ public final class Realm extends BaseRealm {
      * This constructor is only provided for convenience. It is recommend to use
      * {@link #getInstance(RealmConfiguration)} or {@link #getDefaultInstance()} instead.
      *
-     * @param context An Android {@link android.content.Context}
+     * @param context An non-null Android {@link android.content.Context}
      * @return An instance of the Realm class.
+
+     * @throws java.lang.NullPointerException If no {@link Context} is provided.
      * @throws RealmMigrationNeededException If the model classes no longer match the underlying Realm
      *                                       and it must be migrated.
      * @throws RealmIOException              If an error happened when accessing the underlying Realm
