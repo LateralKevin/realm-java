@@ -163,19 +163,18 @@ public final class Realm extends BaseRealm {
     }
 
     /**
-     * Realm static constructor for the default Realm "default.realm".
-     * {@link #close()} must be called when you are done using the Realm instance.
-     * <p>
-     * It sets auto-refresh on if the current thread has a Looper, off otherwise.
-     *
+     * Realm static constructor for the default Realm file "default.realm".
      * This is equivalent to calling {@code Realm.getInstance(new RealmConfiguration(getContext()).build()) }.
-
+     *
+     * This constructor is only provided for convenience. It is recommend to use
+     * {@link #getInstance(RealmConfiguration)} or {@link #getDefaultInstance()} instead.
+     *
      * @param context an Android {@link android.content.Context}
-     * @return an instance of the Realm class
-     * @throws RealmMigrationNeededException The model classes have been changed and the Realm
-     *                                       must be migrated
-     * @throws RealmIOException              Error when accessing underlying file
-     * @throws RealmException                Other errors
+     * @return an instance of the Realm class.
+     * @throws RealmMigrationNeededException If the model classes no longer match the underlying Realm
+     *                                       and it must be migrated.
+     * @throws RealmIOException              If an error happened when accessing the underlying Realm
+     *                                       file.
      */
     public static Realm getInstance(Context context) {
         return Realm.getInstance(new RealmConfiguration.Builder(context)
@@ -187,7 +186,7 @@ public final class Realm extends BaseRealm {
      * Realm static constructor that returns the Realm instance defined by the {@link io.realm.RealmConfiguration} set
      * by {@link #setDefaultConfiguration(RealmConfiguration)}
      *
-     * @return an instance of the Realm class
+     * @return an instance of the Realm.
      *
      * @throws java.lang.NullPointerException If no default configuration has been defined.
      * @throws RealmMigrationNeededException If no migration has been provided by the default configuration and the
